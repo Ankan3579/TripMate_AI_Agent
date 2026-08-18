@@ -1,0 +1,59 @@
+# ==============================
+# LangChain / LangGraph
+# ==============================
+langchain
+langchain-core
+langchain-community
+langgraph
+langchain-mistralai
+langchain-tavily
+
+# ==============================
+# Mistral API
+# ==============================
+mistralai
+
+# ==============================
+# PostgreSQL
+# ==============================
+psycopg[binary]
+SQLAlchemy
+langgraph-checkpoint-postgres
+
+# ==============================
+# LangSmith
+# ==============================
+langsmith
+
+# ==============================
+# Web Search - Tavily
+# ==============================
+tavily-python
+
+# ==============================
+# Flight / Aviation
+# ==============================
+requests
+
+# ==============================
+# Airport / Country Data
+# ==============================
+airportsdata
+pycountry
+
+# ==============================
+# Environment Variables
+# ==============================
+python-dotenv
+
+# ==============================
+# Frontend
+# ==============================
+streamlit
+
+# ==============================
+fastapi
+# ==============================
+# Utilities
+# ==============================
+pydantic
