@@ -1,57 +1,52 @@
 from langchain_mistralai import ChatMistralAI
-import os 
+import os
+
 from dotenv import load_dotenv
-load_dotenv()
 from state.tripe_state import TripState
 
-api_key = os.getenv("MISTRAL_API_KEY")
+from tools.flight_tools import search_flights
+
+
+load_dotenv()
 
 llm = ChatMistralAI(
     model="mistral-small-2603",
     temperature=0,
-    api_key=api_key
+    api_key=os.getenv("MISTRAL_API_KEY")
 )
 
 
 def flight_agent(state: TripState):
 
+    flight_data = search_flights.invoke({
+        "departure": state["origin"],
+        "arrival": state["destination"]
+    })
+
     prompt = f"""
 You are the Flight Agent of TripMate.
 
-User wants to travel from {state['origin']} to {state['destination']}.
-
-Travel details:
-
-Origin:
+User wants to travel from:
 {state['origin']}
 
-Destination:
+to:
 {state['destination']}
 
-Start date:
-{state['start_date']}
+Travel dates:
+{state['start_date']} to {state['end_date']}
 
-End date:
-{state['end_date']}
-
-Number of travelers:
+Travelers:
 {state['travelers']}
 
-User query:
-{state['user_query']}
+Actual flight API result:
+{flight_data}
 
-Find or analyze suitable flight options.
-
-Provide:
-- Airline
-- Flight information if available
-- Departure
-- Arrival
-- Approximate price if available
-- Duration
-- Useful travel information
+Explain the available flight information.
 
 Do not invent flight information.
+
+If the API returned no flight information,
+say that flight information is unavailable.
 """
 
     response = llm.invoke(prompt)

@@ -16,7 +16,8 @@ def search_hotels(
     check_in: str = "",
     check_out: str = "",
     budget: str = "",
-    guests: int = 1
+    guests: int = 1,
+    
 ) -> str:
     """
     Search for hotels in a destination using Tavily.

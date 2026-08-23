@@ -2,55 +2,120 @@ from langgraph.graph import StateGraph, START, END
 
 from state.tripe_state import TripState
 
+from graph.router import router_agent
+
 from agents.flight_agent import flight_agent
 from agents.hotel_agent import hotel_agent
 from agents.itenary_agent import itinerary_agent
+from agents.memory_agent import memory_agent
 from agents.response_agent import response_agent
 
 
-graph = StateGraph(TripState)
+# =====================================
+# CREATE GRAPH
+# =====================================
+
+builder = StateGraph(TripState)
 
 
-# Add nodes
-graph.add_node("flight_agent", flight_agent)
-graph.add_node("hotel_agent", hotel_agent)
-graph.add_node("itinerary_agent", itinerary_agent)
-graph.add_node("response_agent", response_agent)
+# =====================================
+# ADD NODES
+# =====================================
+
+builder.add_node(
+    "router",
+    router_agent
+)
+
+builder.add_node(
+    "memory_agent",
+    memory_agent
+)
+
+builder.add_node(
+    "flight_agent",
+    flight_agent
+)
+
+builder.add_node(
+    "hotel_agent",
+    hotel_agent
+)
+
+builder.add_node(
+    "itinerary_agent",
+    itinerary_agent
+)
+
+builder.add_node(
+    "response_agent",
+    response_agent
+)
 
 
-# Flow
-graph.add_edge(START, "flight_agent")
+# =====================================
+# START → ROUTER
+# =====================================
 
-graph.add_edge("flight_agent", "hotel_agent")
-
-graph.add_edge("hotel_agent", "itinerary_agent")
-
-graph.add_edge("itinerary_agent", "response_agent")
-
-graph.add_edge("response_agent", END)
+builder.add_edge(
+    START,
+    "router"
+)
 
 
-tripmate_graph = graph.compile()
+# =====================================
+# CONDITIONAL WORKFLOW
+# =====================================
 
-if __name__ == "__main__":
+builder.add_conditional_edges(
+    "router",
 
-    initial_state = {
-        "user_query": "Plan a 3 day trip to Kolkata",
-        "origin": "Delhi",
-        "destination": "Kolkata",
-        "start_date": "2026-09-10",
-        "end_date": "2026-09-12",
-        "budget": "under 15000 INR",
-        "travelers": 2,
+    lambda state: state["route"],
 
-        "flight_result": "",
-        "hotel_result": "",
-        "itinerary_result": "",
-        "final_response": ""
+    {
+        "memory": "memory_agent",
+        "normal": "flight_agent"
     }
+)
 
-    result = tripmate_graph.invoke(initial_state)
 
-    print("\n========== FINAL RESPONSE ==========\n")
+# =====================================
+# MEMORY PATH
+# =====================================
 
-    print(result["final_response"])
+builder.add_edge(
+    "memory_agent",
+    END
+)
+
+
+# =====================================
+# NORMAL TRIP PATH
+# =====================================
+
+builder.add_edge(
+    "flight_agent",
+    "hotel_agent"
+)
+
+builder.add_edge(
+    "hotel_agent",
+    "itinerary_agent"
+)
+
+builder.add_edge(
+    "itinerary_agent",
+    "response_agent"
+)
+
+builder.add_edge(
+    "response_agent",
+    END
+)
+
+
+# =====================================
+# COMPILE
+# =====================================
+
+tripmate_graph = builder.compile()
