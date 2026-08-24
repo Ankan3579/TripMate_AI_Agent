@@ -10,7 +10,7 @@ from tools.flight_tools import search_flights
 load_dotenv()
 
 llm = ChatMistralAI(
-    model="mistral-small-2603",
+    model_name="mistral-small-2603",
     temperature=0,
     api_key=os.getenv("MISTRAL_API_KEY")
 )
